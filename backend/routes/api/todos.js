@@ -35,4 +35,20 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.delete("/:id", async (req, res) => {
+    try {
+        let todo = await Todo.findOne({ _id: req.params.id });
+        if(!todo) {
+            res.status(400).json({ message: "Invalid 'id'"});
+            return;
+        }
+
+        await Todo.deleteOne({ _id: todo._id });
+        res.sendStatus(200);
+    } catch(err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 module.exports = router;
