@@ -18,7 +18,7 @@ mongoose.connect(mongo_uri, { useNewUrlParser: true, useUnifiedTopology: true })
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-app.use("/api", require("./routes/api/todos"));
+app.use("/api/todos", require("./routes/api/todos"));
 
 app.listen(port, () => {
     console.log(`Backend listening on port ${port}`)
