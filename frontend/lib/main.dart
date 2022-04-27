@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:todo/pages/homepage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Parse().initialize("myAppId", "http://localhost:3000/parse",
+      debug: true,
+      liveQueryUrl: "ws://localhost:3000/",
+      coreStore: await CoreStoreSharedPrefsImp.getInstance());
+
   runApp(const MyApp());
 }
 

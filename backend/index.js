@@ -1,25 +1,31 @@
-require("dotenv").config();
+const express = require("express");
+const http = require("http");
+const ParseServer = require("parse-server").ParseServer;
 
-const mongoose = require("mongoose");
-const express = require('express');
+const parseConfig = {
+    databaseURI: "mongodb://localhost:27017/mydb",
+    appId: "myAppId",
+    masterKey: "secretKey",
+    serverURL: "http://localhost:3000/parse",
+    liveQuery: {
+      classNames: ["Test"]
+    }
+};
 
-const app = express()
-const port = process.env.SERVER_PORT || 3000;
+const parseApi = new ParseServer(parseConfig);
 
-app.use(express.json());
+const app = express();
+const port = 3000;
 
-function err(msg) {
-    throw new Error(msg);
-}
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+});
 
-let mongo_uri = process.env.MONGO_URI || err("MONGO_URI not defined");
-mongoose.connect(mongo_uri, { useNewUrlParser: true, useUnifiedTopology: true });
+app.use("/parse", parseApi);
 
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+let httpServer = http.createServer(app);
+httpServer.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+});
 
-app.use("/api/todos", require("./routes/api/todos"));
-
-app.listen(port, () => {
-    console.log(`Backend listening on port ${port}`)
-})
+let parseLiveQueryServer = ParseServer.createLiveQueryServer(httpServer);
