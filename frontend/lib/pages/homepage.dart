@@ -1,25 +1,9 @@
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
-
-class Todo {
-  final String id;
-  final String title;
-
-  const Todo({
-    required this.id,
-    required this.title,
-  });
-
-  factory Todo.fromJson(Map<String, dynamic> json) {
-    return Todo(
-      id: json["_id"],
-      title: json["title"],
-    );
-  }
-}
+import 'package:todo/models/todo.dart';
+import 'package:todo/pages/viewtodo.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -36,33 +20,55 @@ class _HomepageState extends State<Homepage> {
     super.initState();
   }
 
-  Widget buildItem(BuildContext context, String id, String title) {
+  Widget buildItem(BuildContext context, Todo todo) {
+    List<Widget> widgets = todo.steps
+        .map((step) => ListTile(
+              title: Text(step.title),
+              leading: const Icon(Icons.assignment),
+              trailing: IconButton(
+                splashRadius: 20.0,
+                icon: const Icon(Icons.delete_forever),
+                onPressed: () {
+                  todo.removeStep(step);
+                  /*
+                  todo
+                    ..setRemove("steps", step.toJson())
+                    ..save();
+                    */
+                },
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: ((context) => ViewTodo(todo))));
+              },
+            ))
+        .toList();
+
     return Card(
-      child: ListTile(
-          title: Text(title),
-          leading: const Icon(Icons.assignment),
+      child: ExpansionTile(
+          title: Text(todo.title),
+          controlAffinity: ListTileControlAffinity.leading,
           trailing: IconButton(
             splashRadius: 20.0,
             icon: const Icon(Icons.delete_forever),
             onPressed: () {
-              ParseObject("Test").delete(id: id);
+              todo.delete(id: todo.objectId!);
             },
-          )),
+          ),
+          children: widgets),
     );
   }
 
   Widget buildList(BuildContext context) {
-    QueryBuilder<ParseObject> query =
-        QueryBuilder<ParseObject>(ParseObject('Test'));
+    QueryBuilder<Todo> query = QueryBuilder<Todo>(Todo());
 
-    return ParseLiveListWidget<ParseObject>(
+    return ParseLiveListWidget<Todo>(
       query: query,
-      childBuilder: (BuildContext context,
-          ParseLiveListElementSnapshot<ParseObject> snapshot) {
+      childBuilder:
+          (BuildContext context, ParseLiveListElementSnapshot<Todo> snapshot) {
         if (snapshot.hasData) {
-          var id = snapshot.loadedData!.objectId!;
-          var title = snapshot.loadedData!.get("title");
-          return buildItem(context, id, title);
+          var todo = snapshot.loadedData!;
+          return buildItem(context, todo);
         } else {
           return Container();
         }
