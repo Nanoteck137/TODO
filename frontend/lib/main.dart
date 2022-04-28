@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:todo/models/todo.dart';
@@ -8,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+/*
   await Parse().initialize("myAppId", "http://localhost:3000/parse",
       debug: true,
       liveQueryUrl: "ws://localhost:3000/",
@@ -15,6 +18,7 @@ void main() async {
       registeredSubClassMap: <String, ParseObjectConstructor>{
         'Test': () => Todo(),
       });
+      */
 
   await flutter_acrylic.Window.initialize();
   await WindowManager.instance.ensureInitialized();
@@ -23,11 +27,11 @@ void main() async {
       TitleBarStyle.hidden,
       windowButtonVisibility: false,
     );
-    await windowManager.setSize(const Size(755, 545));
+    // await windowManager.setSize(const Size(755, 545));
     await windowManager.setMinimumSize(const Size(755, 545));
     await windowManager.center();
-    await windowManager.show();
     await windowManager.setSkipTaskbar(false);
+    await windowManager.show();
   });
 
   runApp(const MyApp());
@@ -75,10 +79,17 @@ class _TestState extends State<Test> {
   Widget build(BuildContext context) {
     return NavigationView(
       appBar: NavigationAppBar(
+        automaticallyImplyLeading: false,
         height: 35.0,
         backgroundColor: FluentTheme.of(context).scaffoldBackgroundColor,
-        title: const DragToMoveArea(
-          child: Text("Hello World"),
+        title: DragToMoveArea(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 24.0),
+            child: Container(
+              alignment: Alignment.centerLeft,
+              child: const Text("Todo App"),
+            ),
+          ),
         ),
         actions: DragToMoveArea(
           child: Row(
@@ -90,28 +101,48 @@ class _TestState extends State<Test> {
           ),
         ),
       ),
+      content: NavigationBody.builder(
+        index: currentIndex,
+        itemBuilder: (context, index) {
+          return ScaffoldPage(
+            header: PageHeader(
+              title: const Text("Hello World"),
+            ),
+            content: Center(
+              child: Text("Hello World"),
+            ),
+          );
+        },
+      ),
       pane: NavigationPane(
         selected: currentIndex,
         onChanged: (i) {
           setState(() {
+            log("Index: $i");
             currentIndex = i;
           });
         },
+        footerItems: [
+          PaneItem(
+            title: const Text("Settings"),
+            icon: const Icon(FluentIcons.settings),
+          ),
+        ],
         items: [
           PaneItem(
             title: const Text("Hello World"),
-            icon: const Icon(FluentIcons.home),
+            icon: const Icon(FluentIcons.folder),
           ),
           PaneItem(
             title: const Text("Hello World 2"),
-            icon: const Icon(FluentIcons.home),
+            icon: const Icon(FluentIcons.folder),
           ),
           PaneItem(
             title: const Text("Hello World 3"),
-            icon: const Icon(FluentIcons.home),
+            icon: const Icon(FluentIcons.folder),
           ),
         ],
-        displayMode: PaneDisplayMode.auto,
+        displayMode: PaneDisplayMode.open,
       ),
     );
   }
