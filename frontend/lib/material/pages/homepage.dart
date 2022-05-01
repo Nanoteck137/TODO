@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
-import 'package:todo/models/todo.dart';
 
-import 'viewtodo.dart';
+import 'view_tasks.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -17,52 +18,34 @@ class _HomepageState extends State<Homepage> {
     super.initState();
   }
 
-  Widget buildItem(BuildContext context, Todo todo) {
-    List<Widget> widgets = todo.steps
-        .map((step) => ListTile(
-              title: Text(step.title),
-              leading: const Icon(Icons.assignment),
-              trailing: IconButton(
-                splashRadius: 20.0,
-                icon: const Icon(Icons.delete_forever),
-                onPressed: () {
-                  todo.removeStep(step);
-                },
-              ),
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: ((context) => ViewTodo(todo))));
-              },
-            ))
-        .toList();
-
+  Widget buildItem(BuildContext context, ParseObject folder) {
+    var title = folder.get<String>("title", defaultValue: "")!;
     return Card(
-      child: ExpansionTile(
-          title: Text(todo.title),
-          controlAffinity: ListTileControlAffinity.leading,
-          trailing: IconButton(
-            splashRadius: 20.0,
-            icon: const Icon(Icons.delete_forever),
-            onPressed: () {
-              todo.delete(id: todo.objectId!);
-            },
-          ),
-          children: widgets),
+      child: ListTile(
+        leading: const Icon(Icons.folder),
+        trailing: const Icon(Icons.arrow_forward_sharp),
+        title: Text(title),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return ViewTasks(folder);
+          }));
+        },
+      ),
     );
   }
 
   Widget buildList(BuildContext context) {
-    QueryBuilder<Todo> query = QueryBuilder<Todo>(Todo());
-
-    return ParseLiveListWidget<Todo>(
+    QueryBuilder<ParseObject> query =
+        QueryBuilder<ParseObject>(ParseObject("folders"));
+    return ParseLiveListWidget(
       query: query,
-      childBuilder:
-          (BuildContext context, ParseLiveListElementSnapshot<Todo> snapshot) {
+      childBuilder: (BuildContext context,
+          ParseLiveListElementSnapshot<ParseObject> snapshot) {
         if (snapshot.hasData) {
-          var todo = snapshot.loadedData!;
-          return buildItem(context, todo);
+          var obj = snapshot.loadedData!;
+          return buildItem(context, obj);
         } else {
-          return Container();
+          return const CircularProgressIndicator();
         }
       },
     );

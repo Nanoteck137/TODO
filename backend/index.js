@@ -8,7 +8,7 @@ const parseConfig = {
     masterKey: "secretKey",
     serverURL: "http://localhost:3000/parse",
     liveQuery: {
-      classNames: ["todos", "tasks"]
+      classNames: ["todos", "tasks", "folders"]
     }
 };
 
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.use("/parse", parseApi);
 
 let httpServer = http.createServer(app);
-httpServer.listen(port, () => {
+httpServer.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening on port ${port}`)
 });
 
