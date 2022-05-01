@@ -10,11 +10,10 @@ Simple TODO app with backend and frontend
 ```
 Folder:
     - Title
-    - Todos
+    - Tasks
 
-Todo:
+Task:
     - Title
-    - Steps
-        - Title
-        - Completed
+    - Completed
+
 ```

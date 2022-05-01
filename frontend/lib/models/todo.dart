@@ -2,7 +2,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class TodoStep {
   final String title;
-  final bool completed;
+  bool completed;
 
   TodoStep(this.title, this.completed);
 
@@ -40,5 +40,13 @@ class Todo extends ParseObject implements ParseCloneable {
   Future<ParseResponse> removeStep(TodoStep step) {
     var obj = this..setRemove("steps", step.toJson());
     return obj.save();
+  }
+
+  Future<ParseResponse> setStepCompleted(int index, bool value) {
+    var steps = get("steps");
+    steps[index]["completed"] = value;
+    set("steps", steps);
+
+    return save();
   }
 }

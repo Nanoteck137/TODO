@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:todo/models/todo.dart';
-import 'package:todo/pages/viewtodo.dart';
+
+import 'viewtodo.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -13,8 +12,6 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  int _counter = 0;
-
   @override
   void initState() {
     super.initState();
@@ -30,11 +27,6 @@ class _HomepageState extends State<Homepage> {
                 icon: const Icon(Icons.delete_forever),
                 onPressed: () {
                   todo.removeStep(step);
-                  /*
-                  todo
-                    ..setRemove("steps", step.toJson())
-                    ..save();
-                    */
                 },
               ),
               onTap: () {
@@ -83,20 +75,6 @@ class _HomepageState extends State<Homepage> {
         title: const Text("Todos"),
       ),
       body: buildList(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _counter++;
-            var todo = ParseObject("Test")
-              ..set("title", "$_counter")
-              ..set("content", "test");
-
-            todo.save();
-          });
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }

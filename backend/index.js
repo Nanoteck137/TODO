@@ -8,7 +8,7 @@ const parseConfig = {
     masterKey: "secretKey",
     serverURL: "http://localhost:3000/parse",
     liveQuery: {
-      classNames: ["todos"]
+      classNames: ["todos", "tasks"]
     }
 };
 
